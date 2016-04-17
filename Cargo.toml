@@ -1,0 +1,7 @@
+[package]
+name = "rustyweb"
+version = "0.1.0"
+authors = ["John Serrano <johnserrano404@gmail.com>"]
+
+[dependencies]
+rustc-serialize = "*"

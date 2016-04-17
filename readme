@@ -1,0 +1,15 @@
+Rustyweb
+A simple tcp server written in Rust by John Serrano
+
+There should be a "rustyweb" directory in /etc/ containing a "rustyweb.conf"
+file. rustyweb.conf is a json file with two fields: "port" and "path_to_files".
+"port" contains the port number the server will run on. "path_to_files" contains
+the location of the root dir which will be served. In the future, there will be
+an install script which will handle this for you.
+
+In a very minimalist way, this is a functioning web server, but there is still
+much to do, including but remotely limited to the following:
+ - Index pages
+ - Error pages
+ - Handling requests which aren't get requests
+ - Better (informative in any way) logging
