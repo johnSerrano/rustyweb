@@ -114,13 +114,10 @@ fn serve_get(location: &String, mut stream: TcpStream, config: ConfigStruct) {
         stream.write(&buffer);
         println!("Iteration!");
     }
-
-    //stream.write(bytes_to_serve);
-    // TODO: serve file
 }
 
 
-// reads the incoming stream and extracts relevant information from it.
+// Reads the incoming stream and extracts relevant information from it.
 fn parse_request(buffer: [u8; 4096]) -> HTTPRequestStruct {
     let request = match str::from_utf8(&buffer) {
         Ok(v) => v,
