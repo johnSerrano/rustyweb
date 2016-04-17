@@ -77,14 +77,12 @@ fn handle_connection(mut stream: TcpStream, config: ConfigStruct) {
 
 // Serve up a file!
 fn serve_get(location: &String, mut stream: TcpStream, config: ConfigStruct) {
-    println!("serving GET request: {}{}", config.path_to_files, location);
     let file_address = format!("{}{}", config.path_to_files, location);
     let path = &Path::new(&*file_address);
     let mut file_to_serve = match File::open(path) {
         Ok(f) => f,
         Err(_) => {
-            // TODO: serve 404
-            println!("404");
+            serve_error("404".to_string(), stream, config);
             return;
         }
     };
@@ -94,15 +92,13 @@ fn serve_get(location: &String, mut stream: TcpStream, config: ConfigStruct) {
             ;
         }
         Err(_) => {
-            // Serve 404
-            println!("404");
+            serve_error("404".to_string(), stream, config);
             return;
         }
     }
 
     let mut buffer = [0; 4096];
     let iterations = (byte_vector.len() / 4096) + 1;
-    println!("{}", iterations);
 
     for i in 0..iterations {
         for j in 0..4096 {
@@ -119,8 +115,28 @@ fn serve_get(location: &String, mut stream: TcpStream, config: ConfigStruct) {
                     println!("ERROR: {}", err);
                 }
         }
-        println!("Iteration!");
     }
+}
+
+
+fn serve_error(error_code: String, stream: TcpStream, mut config: ConfigStruct) {
+    let address = match &*error_code {
+        "404"=> "404.html",
+        _ => "generic.html",
+    };
+    let absolute_address = format!("/etc/rustyweb/errorpages/{}", address);
+    let path = &Path::new(&*absolute_address);
+    match File::open(path) {
+        Ok(_) => {
+            println!("ERROR: {}. Served {}", error_code, absolute_address);
+        }
+        Err(err) => {
+            println!("Error file not served. {}", err);
+            return;
+        }
+    };
+    config.path_to_files = "/etc/rustyweb/errorpages/".to_string();
+    serve_get(&address.to_string(), stream, config);
 }
 
 
