@@ -8,7 +8,7 @@ the location of the root dir which will be served. In the future, there will be
 an install script which will handle this for you.
 
 In a very minimalist way, this is a functioning web server, but there is still
-much to do, including but remotely limited to the following:
+much to do, including but not remotely limited to the following:
  - Index pages
  - Error pages
  - Handling requests which aren't get requests
