@@ -3,7 +3,7 @@ A simple tcp server written in Rust by John Serrano
 
 To install, download the source and run "install.sh" as root. This will set up
 the configuration files and compile the server. You will find the configuration
-files in /etc/rustyweb. The server binary should be created in /target/debug.
+files in /etc/rustyweb. The server binary should be created in target/debug.
 
 In a very minimalist way, this is a functioning web server, but there is still
 much to do, including but not remotely limited to the following:
