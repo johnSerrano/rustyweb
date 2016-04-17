@@ -82,7 +82,7 @@ fn serve_get(location: &String, mut stream: TcpStream, config: ConfigStruct) {
     let path = &Path::new(&*file_address);
     let mut file_to_serve = match File::open(path) {
         Ok(f) => f,
-        Err(err) => {
+        Err(_) => {
             // TODO: serve 404
             println!("404");
             return;
@@ -93,7 +93,7 @@ fn serve_get(location: &String, mut stream: TcpStream, config: ConfigStruct) {
         Ok(_) => {
             ;
         }
-        Err(err) => {
+        Err(_) => {
             // Serve 404
             println!("404");
             return;
@@ -106,12 +106,19 @@ fn serve_get(location: &String, mut stream: TcpStream, config: ConfigStruct) {
 
     for i in 0..iterations {
         for j in 0..4096 {
-            if (byte_vector.len() <= j + (4096 * i)) {
+            if byte_vector.len() <= j + (4096 * i) {
                 break;
             }
             buffer[j] = byte_vector[j + (4096 * i)]
         }
-        stream.write(&buffer);
+        match stream.write(&buffer) {
+                Ok(_) => {
+                    ;
+                }
+                Err(err) => {
+                    println!("ERROR: {}", err);
+                }
+        }
         println!("Iteration!");
     }
 }
