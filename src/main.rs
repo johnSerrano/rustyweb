@@ -1,20 +1,17 @@
 extern crate rustc_serialize;
+
+mod config;
+mod utils;
+
 use std::io::prelude::*;
 use std::net::TcpListener;
 use std::net::TcpStream;
 use std::thread;
-use std::fs::File;
-use std::path::Path;
 use std::str;
-use rustc_serialize::json;
-
-
-// Struct to contain values from the configuration file
-#[derive(RustcDecodable, RustcEncodable, Clone)]
-pub struct ConfigStruct {
-    port: u32,
-    path_to_files: String,
-}
+use config::read_config_files;
+use config::ConfigStruct;
+use utils::serve_data;
+use utils::get_file_from_location;
 
 // struct to store data from a HTTP request
 pub struct HTTPRequestStruct {
@@ -76,67 +73,21 @@ fn handle_connection(mut stream: TcpStream, config: ConfigStruct) {
 
 
 // Serve up a file!
-fn serve_get(location: &String, mut stream: TcpStream, config: ConfigStruct) {
-    let file_address = format!("{}{}", config.path_to_files, location);
-    let path = &Path::new(&*file_address);
-    let mut file_to_serve = match File::open(path) {
-        Ok(f) => f,
-        Err(_) => {
-            serve_error("404".to_string(), stream, config);
-            return;
-        }
-    };
+fn serve_get(location: &String,	 stream: TcpStream, config: ConfigStruct) {
+    let mut file = get_file_from_location(location, config);
+
     let mut byte_vector: Vec<u8> = Vec::new();
-    match file_to_serve.read_to_end(&mut byte_vector) {
+    match file.read_to_end(&mut byte_vector) {
         Ok(_) => {
             ;
         }
         Err(_) => {
-            serve_error("404".to_string(), stream, config);
+            println!("ERROR: Failed to read file as bytes. Aborting connection.");
             return;
         }
     }
 
-    let mut buffer = [0; 4096];
-    let iterations = (byte_vector.len() / 4096) + 1;
-
-    for i in 0..iterations {
-        for j in 0..4096 {
-            if byte_vector.len() <= j + (4096 * i) {
-                break;
-            }
-            buffer[j] = byte_vector[j + (4096 * i)]
-        }
-        match stream.write(&buffer) {
-                Ok(_) => {
-                    ;
-                }
-                Err(err) => {
-                    println!("ERROR: {}", err);
-                }
-        }
-    }
-}
-
-
-fn serve_error(error_code: String, stream: TcpStream, mut config: ConfigStruct) {
-    let address = match &*error_code {
-        "404"=> "404.html",
-        _ => "generic.html",
-    };
-    let absolute_address = format!("/etc/rustyweb/errorpages/{}", address);
-    let path = &Path::new(&*absolute_address);
-    match File::open(path) {
-        Ok(_) => {
-            println!("ERROR: {}. Served {}", error_code, absolute_address);
-        }
-        Err(err) => {
-            println!("Error file not served. {}", err);
-            return;
-        }
-    };
-    config.path_to_files = "/etc/rustyweb/errorpages/".to_string();
-    serve_get(&address.to_string(), stream, config);
+    serve_data(byte_vector, stream);
 }
 
 
@@ -162,21 +113,4 @@ fn parse_request(buffer: [u8; 4096]) -> HTTPRequestStruct {
         protocol: request_protocol.to_string(),
     };
     return request_struct;
-}
-
-
-// Read config file. Returns ConfigStruct containing config file information.
-fn read_config_files() -> ConfigStruct {
-    let path = &Path::new("/etc/rustyweb/rustyweb.conf");
-    let mut config_file = match File::open(path) {
-        Ok(f) => f,
-        Err(err) => panic!("{}", err),
-    };
-    let mut contents = String::new();
-    match config_file.read_to_string(&mut contents) {
-        Ok(s) => s,
-        Err(err) => panic!("{}", err),
-    };
-    let config: ConfigStruct = json::decode(&*contents).unwrap();
-    return config;
 }
