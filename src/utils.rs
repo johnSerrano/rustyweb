@@ -31,31 +31,25 @@ pub fn serve_data(byte_vector: Vec<u8>, mut stream: TcpStream) {
 }
 
 
-// Find file to serve for a given location. Returns a path to the file that
+// Find file to serve for a given location. Returns the file that
 // should be served.
 pub fn get_file_from_location(location: &String, config: ConfigStruct) -> File {
     let file_address = format!("{}{}", config.path_to_files, location);
     let path = &Path::new(&*file_address);
 
-    //TODO: Cause status code to be 404
+    //TODO: return status code somehow
     let mut file = match File::open(path) {
         Ok(f) => f,
         Err(_) => {
             println!("File not found, 404");
-            // Currently fails fatally on error opening 404 page.
-            // Consider returning a result<&Path> or similar from this function.
-            // Somewhat related, should error page location be in config?
-            // If so, we could verify the necessary pages exist in config module
-            // Otherwise we could still check for error pages on load
-            // NOTE TO JOHN: WRITE INIT PROGRAM TO CHECK EVERYTHING IS IN ORDER
+            // Existence of 404 page should be checked in init module.
+            // It is correct to fail fatally here on its nonexistence.
             File::open(&(Path::new("/etc/rustyweb/errorpages/404.html"))).unwrap()
         }
     };
 
     let data = file.metadata().unwrap().file_type();
 
-    // TODO
-    // If file is a directory: open index
     if data.is_dir() {
         let file_address = format!("{}{}{}", config.path_to_files, location, config.index);
         file = match File::open(Path::new(&*file_address)) {
@@ -68,8 +62,5 @@ pub fn get_file_from_location(location: &String, config: ConfigStruct) -> File {
             }
         };
     }
-
-    // If file does not exist, path = error file
-
     return file;
 }
