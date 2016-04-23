@@ -5,7 +5,7 @@ use std::fs;
 // Test environment and configuration to guarantee safe running.
 // Any preventable or predictable runtime errors should be found here.
 pub fn init(mut config: ConfigStruct) -> ConfigStruct {
-    check_error_pages();
+    check_error_pages(&config);
 
     // If index is empty, default to "index.html"
     // in the future, this should handle index as an optional parameter
@@ -31,14 +31,16 @@ pub fn init(mut config: ConfigStruct) -> ConfigStruct {
         panic!("path_to_files is not a directory.");
     }
 
+    //TODO: check path to error pages
+
     return config;
 }
 
 
 // Verify all necessary error pages exist.
-fn check_error_pages() {
-    let expected_paths = &["/etc/rustyweb/errorpages/404.html",
-                           "/etc/rustyweb/errorpages/generic.html"];
+fn check_error_pages(config: &ConfigStruct) {
+    let expected_paths = &[format!("{}/404.html", config.path_to_error_pages),
+                           format!("{}/generic.html", config.path_to_error_pages)];
 
     for path in expected_paths {
         if !fs::metadata(path).is_ok() {
@@ -48,7 +50,7 @@ fn check_error_pages() {
 }
 
 
-// TESTS
+// TESTS ***********************************************************************
 
 #[test]
 fn test_empty_index() {
@@ -104,4 +106,18 @@ fn test_port_out_of_range() {
 fn test_port_negative() {
     use config::parse_file;
     init(parse_file("./test_files/config_port_negative.json"));
+}
+
+#[test]
+#[should_panic]
+fn test_errorpages_missing() {
+    use config::parse_file;
+    init(parse_file("./test_files/config_errorpages_missing.json"));
+}
+
+#[test]
+#[should_panic]
+fn test_errorpages_not_dir() {
+    use config::parse_file;
+    init(parse_file("./test_files/config_errorpages_not_dir.json"));
 }

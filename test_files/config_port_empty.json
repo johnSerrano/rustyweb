@@ -1,5 +1,6 @@
 {
 "port": "",
 "path_to_files": "/var/www/html",
-"index": "/index.html"
+"index": "/index.html",
+"path_to_error_pages": "/etc/rustyweb/errorpages"
 }

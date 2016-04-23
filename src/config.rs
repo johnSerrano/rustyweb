@@ -8,6 +8,7 @@ pub struct ConfigStruct {
     pub port: u16,
     pub path_to_files: String,
     pub index: String,
+    pub path_to_error_pages: String,
 }
 
 // Read config file. Returns ConfigStruct containing config file information.

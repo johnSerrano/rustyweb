@@ -2,5 +2,5 @@
 "port": 65536,
 "path_to_files": "/var/www/html",
 "index": "/index.html",
-"path_to_error_pages": "/etc/rustyweb/errorpages"
+"path_to_error_pages": "test_files/errorpages_missing"
 }

@@ -44,7 +44,7 @@ pub fn get_file_from_location(location: &String, config: ConfigStruct) -> File {
             println!("File not found, 404");
             // Existence of 404 page should be checked in init module.
             // It is correct to fail fatally here on its nonexistence.
-            File::open(&(Path::new("/etc/rustyweb/errorpages/404.html"))).unwrap()
+            File::open(&(Path::new(&*format!("{}/404.html", config.path_to_error_pages)))).unwrap()
         }
     };
 
@@ -59,7 +59,7 @@ pub fn get_file_from_location(location: &String, config: ConfigStruct) -> File {
                 println!("Index not found, 404");
                 // Existence of 404 page should be checked in init module.
                 // It is correct to fail fatally here on its nonexistence.
-                File::open(&(Path::new("/etc/rustyweb/errorpages/404.html"))).unwrap()
+                File::open(&(Path::new(&*format!("{}/404.html", config.path_to_error_pages)))).unwrap()
             }
         };
     }
