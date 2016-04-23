@@ -1,0 +1,5 @@
+{
+"port": 8000,
+"path_to_files": "./Cargo.toml",
+"index": "/index.html"
+}

@@ -5,14 +5,18 @@ use rustc_serialize::json;
 
 #[derive(RustcDecodable, RustcEncodable, Clone)]
 pub struct ConfigStruct {
-    pub port: u32,
+    pub port: u16,
     pub path_to_files: String,
     pub index: String,
 }
 
 // Read config file. Returns ConfigStruct containing config file information.
 pub fn read_config_files() -> ConfigStruct {
-    let path = &Path::new("/etc/rustyweb/rustyweb.conf");
+    return parse_file("/etc/rustyweb/rustyweb.conf");
+}
+
+pub fn parse_file(file_path: &str) -> ConfigStruct {
+    let path = &Path::new(file_path);
     let mut config_file = match File::open(path) {
         Ok(f) => f,
         Err(err) => panic!("{}", err),
@@ -24,4 +28,13 @@ pub fn read_config_files() -> ConfigStruct {
     };
     let config: ConfigStruct = json::decode(&*contents).unwrap();
     return config;
+}
+
+
+// TESTS
+
+
+#[test]
+fn test_valid_config() {
+    read_config_files();
 }

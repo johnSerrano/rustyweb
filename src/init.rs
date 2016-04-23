@@ -2,6 +2,8 @@ use config::ConfigStruct;
 use std::fs;
 
 
+// Test environment and configuration to guarantee safe running.
+// Any preventable or predictable runtime errors should be found here.
 pub fn init(mut config: ConfigStruct) -> ConfigStruct {
     check_error_pages();
 
@@ -43,4 +45,63 @@ fn check_error_pages() {
             panic!("Missing error page: {}", path);
         }
     }
+}
+
+
+// TESTS
+
+#[test]
+fn test_empty_index() {
+    use config::parse_file;
+    let result = init(parse_file("./test_files/config_empty_index.json"));
+    assert!(result.index == "/index.html");
+}
+
+#[test]
+fn test_no_slash_before_index() {
+    use config::parse_file;
+    let result = init(parse_file("./test_files/config_index_no_slash.json"));
+    assert!(result.index == "/index.html");
+}
+
+#[test]
+#[should_panic]
+fn test_path_to_files_not_dir() {
+    use config::parse_file;
+    init(parse_file("./test_files/config_path_to_files_not_dir.json"));
+}
+
+#[test]
+#[should_panic]
+fn test_path_to_files_does_not_exist() {
+    use config::parse_file;
+    init(parse_file("./test_files/config_path_to_files_not_exist.json"));
+}
+
+#[test]
+#[should_panic]
+fn test_path_to_files_does_not_empty() {
+    use config::parse_file;
+    init(parse_file("./test_files/config_path_to_files_empty.json"));
+}
+
+#[test]
+#[should_panic]
+fn test_port_empty() {
+    use config::parse_file;
+    init(parse_file("./test_files/config_port_empty.json"));
+}
+
+#[test]
+#[should_panic]
+fn test_port_out_of_range() {
+    use config::parse_file;
+    init(parse_file("./test_files/config_port_out_of_range.json"));
+}
+
+#[test]
+#[should_panic]
+fn test_port_negative() {
+    use config::parse_file;
+    init(parse_file("./test_files/config_port_negative.json"));
 }
