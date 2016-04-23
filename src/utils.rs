@@ -48,6 +48,7 @@ pub fn get_file_from_location(location: &String, config: ConfigStruct) -> File {
         }
     };
 
+    // If location is a directory, serve index page
     let data = file.metadata().unwrap().file_type();
 
     if data.is_dir() {
