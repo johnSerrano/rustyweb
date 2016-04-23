@@ -2,6 +2,7 @@ extern crate rustc_serialize;
 
 mod config;
 mod utils;
+mod init;
 
 use std::io::prelude::*;
 use std::net::TcpListener;
@@ -12,6 +13,7 @@ use config::read_config_files;
 use config::ConfigStruct;
 use utils::serve_data;
 use utils::get_file_from_location;
+use init::init;
 
 // struct to store data from a HTTP request
 pub struct HTTPRequestStruct {
@@ -23,6 +25,7 @@ pub struct HTTPRequestStruct {
 
 fn main() {
     let config = read_config_files();
+    let config = init(config);
     run_server(config);
 }
 
