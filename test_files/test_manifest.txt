@@ -1,7 +1,7 @@
 Note: not all of these exist yet. Those that do not are marked with an 'x'
  Tests:
       Run server
-       x- verify server accepts incoming streams
+        - verify server accepts incoming streams
        x- test various requests to server, including bad locations and locations with special characters
        x- ensure responses are correct and valid http
        x- make sure index pages work
@@ -17,5 +17,8 @@ Note: not all of these exist yet. Those that do not are marked with an 'x'
         - config where port is empty
         - config where port is negative
         - config where port is greater than 65535
-       x- errorpages do not exist
-       x- errorpages is not a directory
+        - errorpages do not exist
+        - errorpages is not a directory
+      Parse Request
+       x- verify parsing (status code, protocol, location)
+       x- verify invalid requests break thread

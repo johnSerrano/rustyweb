@@ -69,9 +69,9 @@ fn handle_connection(mut stream: TcpStream, config: ConfigStruct) {
     if request.request_type == "GET" {
         serve_get(&request.location, stream, config);
     }
-    println!("Type: {}", request.request_type);
-    println!("Location: {}", request.location);
-    println!("Protocol: {}", request.protocol);
+    //println!("Type: {}", request.request_type);
+    //println!("Location: {}", request.location);
+    //println!("Protocol: {}", request.protocol);
 }
 
 
@@ -116,4 +116,24 @@ fn parse_request(buffer: [u8; 4096]) -> HTTPRequestStruct {
         protocol: request_protocol.to_string(),
     };
     return request_struct;
+}
+
+// TESTS ***********************************************************************
+
+#[test]
+fn test_server_accepts_incoming_streams() {
+    use std::process::Command;
+
+    let config = config::parse_file("test_files/test_server_valid.json");
+    let config_clone = config.clone();
+    // run server on port 7999
+    thread::spawn(|| {
+        run_server(config_clone);
+    });
+
+    // exec curl
+    let curl = Command::new("curl").arg("http://localhost:7999/index.html").output().unwrap();
+    let mut output = format!("{}", String::from_utf8_lossy(&curl.stdout));
+    while output.pop().unwrap() == '\u{0}' { ; }
+    assert_eq!("Index Received", output);
 }
