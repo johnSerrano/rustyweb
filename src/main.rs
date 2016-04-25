@@ -136,18 +136,17 @@ fn test_server_accepts_incoming_streams() {
     let mut output = format!("{}", String::from_utf8_lossy(&curl.stdout));
     while output.pop().unwrap() == '\u{0}' { ; }
     assert_eq!("Index Received", output);
+
+    //test index pages
+    test_index_pages();
+
+    //test 404 pages
+    test_404();
 }
 
-#[test]
+//#[test]
 fn test_index_pages() {
     use std::process::Command;
-
-    let config = config::parse_file("test_files/test_server_valid.json");
-    let config_clone = config.clone();
-    // run server on port 7999
-    thread::spawn(|| {
-        run_server(config_clone);
-    });
 
     // exec curl
     let curl = Command::new("curl").arg("http://localhost:7999/").output().unwrap();
@@ -161,16 +160,9 @@ fn test_index_pages() {
     assert_eq!("Index Received", output);
 }
 
-#[test]
+//#[test]
 fn test_404() {
     use std::process::Command;
-
-    let config = config::parse_file("test_files/test_server_valid.json");
-    let config_clone = config.clone();
-    // run server on port 7999
-    thread::spawn(|| {
-        run_server(config_clone);
-    });
 
     //TODO verify /not/a/file does not exist
 

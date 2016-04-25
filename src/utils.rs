@@ -41,7 +41,6 @@ pub fn get_file_from_location(location: &String, config: ConfigStruct) -> File {
     let mut file = match File::open(path) {
         Ok(f) => f,
         Err(_) => {
-            println!("File not found, 404");
             // Existence of 404 page should be checked in init module.
             // It is correct to fail fatally here on its nonexistence.
             File::open(&(Path::new(&*format!("{}/404.html", config.path_to_error_pages)))).unwrap()
@@ -56,7 +55,6 @@ pub fn get_file_from_location(location: &String, config: ConfigStruct) -> File {
         file = match File::open(Path::new(&*file_address)) {
             Ok(f) => f,
             Err(_) => {
-                println!("Index not found, 404");
                 // Existence of 404 page should be checked in init module.
                 // It is correct to fail fatally here on its nonexistence.
                 File::open(&(Path::new(&*format!("{}/404.html", config.path_to_error_pages)))).unwrap()
