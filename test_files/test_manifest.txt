@@ -4,8 +4,9 @@ Note: not all of these exist yet. Those that do not are marked with an 'x'
         - verify server accepts incoming streams
        x- test various requests to server, including bad locations and locations with special characters
        x- ensure responses are correct and valid http
-       x- make sure index pages work
-       x- make sure error pages are served in appropriate situations
+        - make sure index pages work
+      Make sure error pages are served in appropriate situations
+        - 404 File not found
       Test config parsing
         - check against valid input file, which should be present as /sample.json
       Test runtime tests

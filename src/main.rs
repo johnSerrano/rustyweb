@@ -137,3 +137,46 @@ fn test_server_accepts_incoming_streams() {
     while output.pop().unwrap() == '\u{0}' { ; }
     assert_eq!("Index Received", output);
 }
+
+#[test]
+fn test_index_pages() {
+    use std::process::Command;
+
+    let config = config::parse_file("test_files/test_server_valid.json");
+    let config_clone = config.clone();
+    // run server on port 7999
+    thread::spawn(|| {
+        run_server(config_clone);
+    });
+
+    // exec curl
+    let curl = Command::new("curl").arg("http://localhost:7999/").output().unwrap();
+    let mut output = format!("{}", String::from_utf8_lossy(&curl.stdout));
+    while output.pop().unwrap() == '\u{0}' { ; }
+    assert_eq!("Index Received", output);
+
+    let curl = Command::new("curl").arg("http://localhost:7999/dir").output().unwrap();
+    let mut output = format!("{}", String::from_utf8_lossy(&curl.stdout));
+    while output.pop().unwrap() == '\u{0}' { ; }
+    assert_eq!("Index Received", output);
+}
+
+#[test]
+fn test_404() {
+    use std::process::Command;
+
+    let config = config::parse_file("test_files/test_server_valid.json");
+    let config_clone = config.clone();
+    // run server on port 7999
+    thread::spawn(|| {
+        run_server(config_clone);
+    });
+
+    //TODO verify /not/a/file does not exist
+
+    // exec curl
+    let curl = Command::new("curl").arg("http://localhost:7999/not/a/file").output().unwrap();
+    let mut output = format!("{}", String::from_utf8_lossy(&curl.stdout));
+    while output.pop().unwrap() == '\u{0}' { ; }
+    assert_eq!("404 Received", output);
+}
